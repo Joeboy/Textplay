@@ -344,6 +344,10 @@ if meta == true
   # title
   title = text.scan(/<key>title<\/key>\n?<value>([\s\S]+?)(?=<\/value>)/i).join
 
+  credit = text.scan(/<key>credit<\/key>\n?<value>([\s\S]+?)(?=<\/value>)/i).join
+
+  author = text.scan(/<key>author<\/key>\n?<value>([\s\S]+?)(?=<\/value>)/i).join
+
   # goldman_sluglines
   goldman_sluglines = text.scan(/<key>goldman_sluglines<\/key>\n?<value>([\s\S]+?)(?=<\/value>)/i).join
 
@@ -380,6 +384,14 @@ end
 
 if title == nil or title == ""
   title = "A Screenplay"
+end
+
+if author == nil or author == ""
+  author = "Author unspecified"
+end
+
+if credit == nil or credit == ""
+  credit = "Written by"
 end
 
 if goldman_sluglines == nil or goldman_sluglines == ""
@@ -707,6 +719,32 @@ display:none
 <div id=\"screenplay\">
 "
 
+titlePageHtml = "
+<style>
+#title-page {
+margin-top: 10em;
+padding-top: 20em;
+}
+
+#title-page .title,
+#title-page .credit,
+#title-page .author {
+    text-align: center;
+}
+
+#title-page .title {
+    text-transform: capitalize;
+}
+</style>
+<div id=\"title-page\">
+<p class=\"title\">#{title}</p>
+<p class=\"credit\">#{credit}</p>
+<p class=\"author\">#{author}</p>
+<div class=\"page-break\"></div>
+"
+
+htmlStart += titlePageHtml
+
 # HTML footer
 htmlEnd = '
 </div><!-- end screenplay -->
@@ -733,6 +771,9 @@ xmlEnd = '</root>'
 
 
 # NOTE: PHASE 4 - Convert input to XML
+
+# Remove any DOS-style line endings:
+text = text.gsub(/\r\n/, "\n")
 
 # Misc Encoding
 text = text.gsub(/^[ \t]*([=-]{3,})[ \t]*$/, '<page-break />')
